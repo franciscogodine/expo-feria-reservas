@@ -1,87 +1,130 @@
-import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import { useState } from 'react';
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import { useState } from "react";
+import axios from "axios";
 import ReservationModal from "./ReservationModal";
 
-function StandMap({ stands }) {
+function StandMap({ stands, onRefresh }) {
   const [selectedStand, setSelectedStand] = useState(null);
 
+  const API_URL =
+    process.env.REACT_APP_API_URL || "http://localhost:5000";
+
   const getColor = (estado) => {
-    if (estado === 'disponible') return '#22c55e';
-    if (estado === 'reservado') return '#eab308';
-    return '#ef4444';
+    if (estado === "disponible") return "#22c55e";
+    if (estado === "reservado") return "#eab308";
+    return "#ef4444";
+  };
+
+  // 🔓 liberar stand (ADMIN)
+  const liberarStand = (id) => {
+    axios
+      .put(`${API_URL}/api/stands/liberar/${id}`)
+      .then(() => {
+        if (onRefresh) onRefresh();
+      });
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '15px', color: '#1e3a8a' }}>
-        🗺️ Plano Interactivo - Expo Feria 2026
+    <div style={{ padding: "20px" }}>
+      <h2 style={{ textAlign: "center", color: "#1e3a8a" }}>
+        🗺️ Mapa de Stands
       </h2>
 
-      <MapContainer 
-        center={[19.52, -99.08]} 
-        zoom={15} 
-        style={{ height: '700px', width: '100%', borderRadius: '12px', border: '3px solid #ddd' }}
+      <MapContainer
+        center={[19.52, -99.08]}
+        zoom={15}
+        style={{
+          height: "700px",
+          width: "100%",
+          borderRadius: "12px",
+          border: "2px solid #ddd",
+        }}
       >
-        {/* Vista Satélite */}
         <TileLayer
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-          attribution='&copy; Esri'
+          attribution="&copy; Esri"
         />
 
         {stands.map((stand) => {
-          // Posición más precisa y aleatoria controlada
-          const lat = 19.52 + (Math.random() - 0.5) * 0.05;
-          const lng = -99.08 + (Math.random() - 0.5) * 0.05;
+          // ✅ USO REAL DE BD (NO RANDOM)
+          const lat = stand.latitud;
+          const lng = stand.longitud;
+
+          if (!lat || !lng) return null;
 
           return (
             <CircleMarker
               key={stand.id_stand}
               center={[lat, lng]}
-              radius={12}                    // Tamaño del círculo
+              radius={12}
               pathOptions={{
                 color: getColor(stand.estado),
                 fillColor: getColor(stand.estado),
                 fillOpacity: 0.9,
-                weight: 4
+                weight: 3,
               }}
             >
               <Popup>
-                <div style={{ minWidth: '240px', textAlign: 'center' }}>
-                  <strong style={{ fontSize: '17px' }}>{stand.nombre}</strong><br />
-                  Código: <strong>{stand.codigo}</strong><br />
-                  Tipo: {stand.tipo}<br />
-                  Zona: {stand.zona}<br />
-                  Dimensión: {stand.dimension}<br />
-                  Precio: <strong style={{ color: '#1e3a8a', fontSize: '18px' }}>${stand.precio}</strong><br /><br />
-                  
-                  <span style={{ 
-                    color: getColor(stand.estado), 
-                    fontWeight: 'bold', 
-                    fontSize: '16px' 
-                  }}>
-                    ● {stand.estado.toUpperCase()}
-                  </span><br /><br />
+                <div style={{ minWidth: "240px" }}>
+                  <h3>{stand.nombre}</h3>
 
-                  {stand.estado === 'disponible' ? (
-                    <button 
+                  <p>
+                    <b>Código:</b> {stand.codigo}
+                  </p>
+                  <p>
+                    <b>Tipo:</b> {stand.tipo}
+                  </p>
+                  <p>
+                    <b>Zona:</b> {stand.zona}
+                  </p>
+                  <p>
+                    <b>Precio:</b> ${stand.precio}
+                  </p>
+
+                  <p
+                    style={{
+                      color: getColor(stand.estado),
+                      fontWeight: "bold",
+                    }}
+                  >
+                    ● {stand.estado}
+                  </p>
+
+                  {/* RESERVA */}
+                  {stand.estado === "disponible" && (
+                    <button
                       onClick={() => setSelectedStand(stand)}
                       style={{
-                        width: '100%',
-                        padding: '14px',
-                        backgroundColor: '#1e3a8a',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontSize: '16px',
-                        cursor: 'pointer'
+                        width: "100%",
+                        padding: "10px",
+                        background: "#1e3a8a",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "8px",
+                        cursor: "pointer",
                       }}
                     >
-                      Reservar Este Stand
+                      Reservar
                     </button>
-                  ) : (
-                    <p style={{ color: 'red', fontWeight: 'bold' }}>No disponible</p>
                   )}
+
+                  {/* ADMIN CONTROL */}
+                  <button
+                    onClick={() => liberarStand(stand.id_stand)}
+                    style={{
+                      width: "100%",
+                      marginTop: "8px",
+                      padding: "8px",
+                      background: "#ef4444",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Liberar (Admin)
+                  </button>
                 </div>
               </Popup>
             </CircleMarker>
@@ -89,9 +132,9 @@ function StandMap({ stands }) {
         })}
       </MapContainer>
 
-      <ReservationModal 
-        stand={selectedStand} 
-        onClose={() => setSelectedStand(null)} 
+      <ReservationModal
+        stand={selectedStand}
+        onClose={() => setSelectedStand(null)}
       />
     </div>
   );

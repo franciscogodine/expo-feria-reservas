@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
 
 function Navbar() {
+
+  const usuario = JSON.parse(
+    localStorage.getItem("usuario")
+  );
+
   return (
     <nav
       style={{
@@ -18,6 +23,7 @@ function Navbar() {
       </h2>
 
       <div style={{ display: "flex", gap: "15px" }}>
+
         <Link to="/" style={linkStyle}>
           Inicio
         </Link>
@@ -33,6 +39,17 @@ function Navbar() {
         <Link to="/login" style={linkStyle}>
           Login
         </Link>
+
+        {
+          usuario?.tipo_usuario === "admin" && (
+
+            <Link to="/admin" style={linkStyle}>
+              Admin
+            </Link>
+
+          )
+        }
+
       </div>
     </nav>
   );

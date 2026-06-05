@@ -1,0 +1,160 @@
+.home-container {
+  padding: 20px;
+  background: #f3f4f6;
+}
+
+/* HERO */
+.hero {
+  height: 520px;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-bottom: 60px;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+  padding: 20px;
+}
+
+.hero-title {
+  font-size: 64px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.hero-subtitle {
+  font-size: 26px;
+  max-width: 900px;
+  line-height: 1.6;
+}
+
+.hero-text {
+  margin-top: 25px;
+  font-size: 22px;
+  color: #facc15;
+  font-weight: bold;
+}
+
+/* TARJETAS */
+.cards-section {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 70px;
+}
+
+.premium-card {
+  width: 300px;
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+
+  transition: 0.3s;
+}
+
+.premium-card:hover {
+  transform: translateY(-8px);
+}
+
+.card-image {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+/* BENEFICIOS */
+.benefits-section {
+  margin-top: 70px;
+  background: white;
+  padding: 50px;
+  border-radius: 16px;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.1);
+}
+
+.benefits-title {
+  color: #1e3a8a;
+  margin-bottom: 35px;
+  font-size: 38px;
+  text-align: center;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+  gap: 25px;
+}
+
+.info-card {
+  background: #f5f7fb;
+  padding: 25px;
+  border-radius: 12px;
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.08);
+
+  transition: 0.3s;
+}
+
+.info-card:hover {
+  transform: scale(1.03);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+  .hero {
+    height: 400px;
+  }
+
+  .hero-title {
+    font-size: 38px;
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+  }
+
+  .hero-text {
+    font-size: 16px;
+  }
+
+  .premium-card {
+    width: 100%;
+  }
+
+  .benefits-section {
+    padding: 25px;
+  }
+
+  .benefits-title {
+    font-size: 28px;
+  }
+
+}
